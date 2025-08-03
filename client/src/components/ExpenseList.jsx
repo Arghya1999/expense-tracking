@@ -11,7 +11,7 @@ const ExpenseList = ({ expenses, fetchExpenses, onEdit }) => {
     };
 
     return (
-        <div className="card p-4 shadow-sm">
+        <div className="card p-4 shadow-sm rounded-3">
             <h2 className="card-title text-center mb-4 text-primary">Expenses</h2>
             <ul className="list-group list-group-flush">
                 {expenses.length === 0 ? (

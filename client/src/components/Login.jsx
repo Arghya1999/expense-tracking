@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { login } from '../services/auth.service';
 import { useNavigate } from 'react-router-dom';
-import '../Auth.css';
 
-const Login = () => {
+
+const Login = ({ reload = () => window.location.reload() }) => {
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -15,7 +15,7 @@ const Login = () => {
         try {
             await login(identifier, password);
             navigate('/expenses');
-            window.location.reload();
+            reload();
         } catch (error) {
             const resMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
             setMessage(resMessage);
@@ -23,13 +23,14 @@ const Login = () => {
     };
 
     return (
-        <div className="col-md-12">
-            <div className="card card-container">
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
+            <div className="card p-4 shadow-sm" style={{ width: '100%', maxWidth: '400px' }}>
                 <img
-                    src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-                    alt="profile-img"
-                    className="profile-img-card"
-                />
+                        src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
+                        alt="profile-img"
+                        className="img-fluid rounded-circle mx-auto d-block mb-4"
+                        style={{ width: '96px', height: '96px' }}
+                    />
 
                 <form onSubmit={handleLogin}>
                     <div className="form-group mb-3">
@@ -37,6 +38,7 @@ const Login = () => {
                         <input
                             type="text"
                             className="form-control"
+                            id="identifier"
                             name="identifier"
                             value={identifier}
                             onChange={(e) => setIdentifier(e.target.value)}
@@ -49,6 +51,7 @@ const Login = () => {
                         <input
                             type="password"
                             className="form-control"
+                            id="password"
                             name="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -70,6 +73,9 @@ const Login = () => {
                         </div>
                     )}
                 </form>
+                <p className="mt-3 text-center">
+                    Not registered? <a href="/register">Create an account</a>
+                </p>
             </div>
         </div>
     );
