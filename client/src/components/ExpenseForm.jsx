@@ -6,6 +6,7 @@ const ExpenseForm = ({ onExpenseCreated, editingExpense, onExpenseUpdated }) => 
     const [amount, setAmount] = useState('');
     const [category, setCategory] = useState('');
     const [date, setDate] = useState('');
+    const [error, setError] = useState('');
 
     useEffect(() => {
         if (editingExpense) {
@@ -23,6 +24,11 @@ const ExpenseForm = ({ onExpenseCreated, editingExpense, onExpenseUpdated }) => 
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (parseFloat(amount) < 0) {
+            setError('Amount cannot be negative');
+            return;
+        }
+        setError('');
         const expense = { description, amount: parseFloat(amount), category, date };
         if (editingExpense) {
             onExpenseUpdated(editingExpense.id, expense);
@@ -36,7 +42,7 @@ const ExpenseForm = ({ onExpenseCreated, editingExpense, onExpenseUpdated }) => 
     };
 
     return (
-        <div className="card p-4 shadow-sm">
+        <div className="card p-4 shadow-sm rounded-3">
             <h2 className="card-title text-center mb-4 text-primary">{editingExpense ? 'Edit Expense' : 'Add Expense'}</h2>
             <form onSubmit={handleSubmit}>
                 <div className="mb-3">
@@ -46,6 +52,7 @@ const ExpenseForm = ({ onExpenseCreated, editingExpense, onExpenseUpdated }) => 
                 <div className="mb-3">
                     <label className="form-label">Amount</label>
                     <input type="number" className="form-control" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="e.g., ₹50.00" />
+                    {error && <div className="text-danger mt-1">{error}</div>}
                 </div>
                 <div className="mb-3">
                     <label className="form-label">Date</label>
