@@ -1,0 +1,1 @@
+CREATE INDEX idx_expense_date ON expense (date);

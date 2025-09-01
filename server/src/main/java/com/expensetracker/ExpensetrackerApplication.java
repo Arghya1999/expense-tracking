@@ -1,33 +1,26 @@
 package com.expensetracker;
-
-import com.expensetracker.model.ERole;
-import com.expensetracker.model.Role;
-import com.expensetracker.repository.RoleRepository;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
+import org.springframework.cache.annotation.EnableCaching;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 
 @SpringBootApplication
+@EnableCaching
+@SecurityScheme(
+	name = "bearerAuth",
+	type = SecuritySchemeType.HTTP,
+	bearerFormat = "JWT",
+	scheme = "bearer",
+	in = SecuritySchemeIn.HEADER
+)
 public class ExpensetrackerApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ExpensetrackerApplication.class, args);
 	}
-
-	@Bean
-	public CommandLineRunner demo(RoleRepository roleRepository) {
-		return (args) -> {
-			if (roleRepository.findByName(ERole.ROLE_USER).isEmpty()) {
-				roleRepository.save(new Role(ERole.ROLE_USER));
-			}
-			if (roleRepository.findByName(ERole.ROLE_MODERATOR).isEmpty()) {
-				roleRepository.save(new Role(ERole.ROLE_MODERATOR));
-			}
-			if (roleRepository.findByName(ERole.ROLE_ADMIN).isEmpty()) {
-				roleRepository.save(new Role(ERole.ROLE_ADMIN));
-			}
-		};
-	}
-
 }
+
+
+
