@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import Login from '../Login';
+import LoginForm from '../auth/LoginForm';
 import * as authService from '../../services/auth.service';
 
 // Mock the auth service and react-router-dom

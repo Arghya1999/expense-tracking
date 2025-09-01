@@ -5,10 +5,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Entity
-public class Expense {
+public class Expense implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,15 +23,20 @@ public class Expense {
     private LocalDate date;
     private String category;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     public Expense() {
     }
 
-    public Expense(Long id, String description, double amount, LocalDate date, String category) {
+    public Expense(Long id, String description, double amount, LocalDate date, String category, User user) {
         this.id = id;
         this.description = description;
         this.amount = amount;
         this.date = date;
         this.category = category;
+        this.user = user;
     }
 
     public Long getId() {
@@ -67,5 +77,13 @@ public class Expense {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

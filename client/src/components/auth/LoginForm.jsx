@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import { login } from '../../services/auth.service';
 import { useNavigate, Link } from 'react-router-dom';
-
+import {
+    Card,
+    CardBody,
+    Input,
+    Button,
+    Typography,
+} from "@material-tailwind/react";
+import { UserCircleIcon } from "@heroicons/react/24/solid";
 
 const LoginForm = () => {
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const [errors, setErrors] = useState({});
-    const [passwordShown, setPasswordShown] = useState(false);
     const navigate = useNavigate();
-
-    const togglePasswordVisiblity = () => setPasswordShown((cur) => !cur);
 
     const validate = () => {
         const newErrors = {};
@@ -39,75 +43,49 @@ const LoginForm = () => {
     };
 
     return (
-        <div className="card shadow-sm" style={{ width: '100%', maxWidth: '400px' }}>
-            <div className="card-header bg-primary text-white text-center py-3">
-                <h3 className="mb-0">Sign In</h3>
+        <Card className="w-full max-w-md shadow-xl bg-white dark:bg-gray-800 rounded-lg">
+            <div className="relative bg-clip-border overflow-hidden bg-gradient-to-tr from-blue-600 to-blue-400 text-white shadow-blue-500/40 mb-4 grid h-32 w-32 place-items-center rounded-full mx-auto mt-4 shadow-lg">
+                <div className="flex flex-col items-center justify-center">
+                    <UserCircleIcon className="h-16 w-16 text-white mb-2" />
+                    <h5 className="block antialiased tracking-normal font-sans text-xl font-semibold leading-snug text-white">Sign In</h5>
+                </div>
             </div>
-            <div className="card-body">
-                <p className="mb-4 text-center">
-                    Enter your email and password to sign in
-                </p>
-                <form onSubmit={handleLogin} className="d-flex flex-column gap-4">
-                    <div className="form-group">
-                        <label htmlFor="email">Your Email</label>
-                        <input
-                            id="email"
-                            className="form-control"
-                            type="text"
-                            name="email"
-                            placeholder="name@mail.com"
-                            value={identifier}
-                            onChange={(e) => setIdentifier(e.target.value)}
-                        />
-                        {errors.identifier && <div className="text-danger mt-1">{errors.identifier}</div>}
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <div className="input-group">
-                            <input
-                                id="password"
-                                className="form-control"
-                                placeholder="********"
-                                type={passwordShown ? "text" : "password"}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                            <button
-                                className="btn btn-outline-secondary"
-                                type="button"
-                                onClick={togglePasswordVisiblity}
-                            >
-                                {passwordShown ? (
-                                    <i className="bi bi-eye-slash"></i>
-                                ) : (
-                                    <i className="bi bi-eye"></i>
-                                )}
-                            </button>
-                        </div>
-                        {errors.password && <div className="text-danger mt-1">{errors.password}</div>}
-                    </div>
-                    <button type="submit" className="btn btn-primary w-100">
-                        sign in
-                    </button>
-                    {message && (
-                        <div className="alert alert-danger text-center mt-4" role="alert">
-                            {message}
-                        </div>
-                    )}
-                    <div className="d-flex justify-content-end mt-4">
-                        <a href="#" className="text-decoration-none">
-                            Forgot password
-                        </a>
-                    </div>
-                    <p className="text-center mt-4">
-                        Not registered?{" "}
-                        <Link to="/register" className="text-primary">
-                            Sign Up
-                        </Link>
-                    </p>
-                </form>
-            </div>
-        </div>
+            <CardBody className="flex flex-col gap-4 p-6">
+                <Input
+                    label="Username or Email"
+                    size="lg"
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
+                    error={errors.identifier}
+                    className="dark:text-white"
+                    labelProps={{ className: "dark:text-gray-300" }}
+                />
+                <Input
+                    label="Password"
+                    type="password"
+                    size="lg"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    error={errors.password}
+                    className="dark:text-white"
+                    labelProps={{ className: "dark:text-gray-300" }}
+                />
+                <Button type="submit" color="blue" fullWidth onClick={handleLogin}>
+                    <span className="dark:text-white">Sign In</span>
+                </Button>
+                {message && (
+                    <Typography color="red" className="text-center mt-4">
+                        {message}
+                    </Typography>
+                )}
+                <Typography color="gray" className="mt-4 text-center font-normal dark:text-gray-400">
+                    Don't have an account?{' '}
+                    <Link to="/register" className="font-medium text-blue-600 hover:underline dark:text-blue-400">
+                        Sign up
+                    </Link>
+                </Typography>
+            </CardBody>
+        </Card>
     );
 };
 

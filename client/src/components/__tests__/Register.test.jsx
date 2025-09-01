@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import Register from '../Register';
+import RegisterForm from '../auth/RegisterForm';
 import * as authService from '../../services/auth.service';
 
 // Mock the auth service and react-router-dom
@@ -11,7 +11,7 @@ jest.mock('react-router-dom', () => ({
 
 describe('Register', () => {
     it('renders the registration form', () => {
-        render(<Register />);
+        render(<RegisterForm />);
         expect(screen.getByLabelText(/username/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
@@ -19,7 +19,7 @@ describe('Register', () => {
     });
 
     it('shows password length error for short password', () => {
-        render(<Register />);
+        render(<RegisterForm />);
         const passwordInput = screen.getByLabelText(/password/i);
         fireEvent.change(passwordInput, { target: { value: 'short' } });
         fireEvent.blur(passwordInput); // Trigger validation on blur
@@ -27,7 +27,7 @@ describe('Register', () => {
     });
 
     it('shows password length error for long password', () => {
-        render(<Register />);
+        render(<RegisterForm />);
         const passwordInput = screen.getByLabelText(/password/i);
         fireEvent.change(passwordInput, { target: { value: 'a'.repeat(41) } });
         fireEvent.blur(passwordInput); // Trigger validation on blur
@@ -35,7 +35,7 @@ describe('Register', () => {
     });
 
     it('does not show password error for valid password', () => {
-        render(<Register />);
+        render(<RegisterForm />);
         const passwordInput = screen.getByLabelText(/password/i);
         fireEvent.change(passwordInput, { target: { value: 'validpassword' } });
         fireEvent.blur(passwordInput); // Trigger validation on blur
@@ -47,7 +47,7 @@ describe('Register', () => {
         const navigateMock = jest.fn();
         jest.spyOn(require('react-router-dom'), 'useNavigate').mockReturnValue(navigateMock);
 
-        render(<Register />);
+        render(<RegisterForm />);
 
         fireEvent.change(screen.getByLabelText(/username/i), { target: { value: 'testuser' } });
         fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@example.com' } });
@@ -66,7 +66,7 @@ describe('Register', () => {
         const errorMessage = 'Registration failed';
         authService.register.mockRejectedValueOnce({ response: { data: { message: errorMessage } } });
 
-        render(<Register />);
+        render(<RegisterForm />);
 
         fireEvent.change(screen.getByLabelText(/username/i), { target: { value: 'testuser' } });
         fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@example.com' } });

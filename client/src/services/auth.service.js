@@ -18,7 +18,10 @@ export const login = (identifier, password) => {
         email: isEmail ? identifier : null,
         password,
     }).then((response) => {
+        console.log("Login response data:", response.data); // Add this line for debugging
         if (response.data.accessToken) {
+            // WARNING: Storing JWT in localStorage is vulnerable to XSS attacks.
+            // For production, consider HttpOnly cookies.
             localStorage.setItem("user", JSON.stringify(response.data));
         }
         return response.data;

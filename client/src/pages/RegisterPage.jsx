@@ -3,7 +3,7 @@ import RegisterForm from '../components/auth/RegisterForm';
 
 const RegisterPage = () => {
     return (
-        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
+        <div className="flex justify-center items-center h-full">
             <RegisterForm />
         </div>
     );
