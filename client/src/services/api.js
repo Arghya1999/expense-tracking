@@ -2,10 +2,10 @@
 import axios from 'axios';
 import authHeader from './auth-header';
 
-const API_URL = 'http://localhost:8080/api/expenses';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const getExpenses = (startDate = '', endDate = '') => {
-    let url = API_URL;
+    let url = `${API_BASE_URL}/expenses`;
     const params = new URLSearchParams();
 
     if (startDate) {
@@ -16,19 +16,19 @@ export const getExpenses = (startDate = '', endDate = '') => {
     }
 
     if (params.toString()) {
-        url = `${API_URL}?${params.toString()}`;
+        url = `${url}?${params.toString()}`;
     }
     return axios.get(url, { headers: authHeader() });
 };
 
 export const createExpense = (expense) => {
-    return axios.post(API_URL, expense, { headers: authHeader() });
+    return axios.post(`${API_BASE_URL}/expenses`, expense, { headers: authHeader() });
 };
 
 export const updateExpense = (id, expense) => {
-    return axios.put(`${API_URL}/${id}`, expense, { headers: authHeader() });
+    return axios.put(`${API_BASE_URL}/expenses/${id}`, expense, { headers: authHeader() });
 };
 
 export const deleteExpense = (id) => {
-    return axios.delete(`${API_URL}/${id}`, { headers: authHeader() });
+    return axios.delete(`${API_BASE_URL}/expenses/${id}`, { headers: authHeader() });
 };

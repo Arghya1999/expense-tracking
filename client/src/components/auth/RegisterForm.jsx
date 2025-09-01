@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import { register } from '../../services/auth.service';
 import { useNavigate, Link } from 'react-router-dom';
-
+import {
+    Card,
+    CardBody,
+    Input,
+    Button,
+    Typography,
+} from "@material-tailwind/react";
+import { UserPlusIcon } from "@heroicons/react/24/solid";
 
 const RegisterForm = () => {
     const [username, setUsername] = useState('');
@@ -10,10 +17,7 @@ const RegisterForm = () => {
     const [message, setMessage] = useState('');
     const [successful, setSuccessful] = useState(false);
     const [errors, setErrors] = useState({});
-    const [passwordShown, setPasswordShown] = useState(false);
     const navigate = useNavigate();
-
-    const togglePasswordVisiblity = () => setPasswordShown((cur) => !cur);
 
     const validate = () => {
         const newErrors = {};
@@ -56,83 +60,59 @@ const RegisterForm = () => {
     };
 
     return (
-        <div className="card shadow-sm" style={{ width: '100%', maxWidth: '400px' }}>
-            <div className="card-header bg-primary text-white text-center py-3">
-                <h3 className="mb-0">Sign Up</h3>
+        <Card className="w-full max-w-md shadow-xl bg-white dark:bg-gray-800 rounded-lg">
+            <div className="relative bg-clip-border overflow-hidden bg-gradient-to-tr from-blue-600 to-blue-400 text-white shadow-blue-500/40 mb-4 grid h-32 w-32 place-items-center rounded-full mx-auto mt-4 shadow-lg">
+                <div className="flex flex-col items-center justify-center">
+                    <UserPlusIcon className="h-16 w-16 text-white mb-2" />
+                    <h5 className="block antialiased tracking-normal font-sans text-xl font-semibold leading-snug text-white">Sign Up</h5>
+                </div>
             </div>
-            <div className="card-body">
-                <p className="mb-4 text-center">
-                    Create your account
-                </p>
-                <form onSubmit={handleRegister} className="d-flex flex-column gap-4">
-                    <div className="form-group">
-                        <label htmlFor="username">Username</label>
-                        <input
-                            id="username"
-                            className="form-control"
-                            type="text"
-                            name="username"
-                            placeholder="Your Username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                        />
-                        {errors.username && <div className="text-danger mt-1">{errors.username}</div>}
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="email">Your Email</label>
-                        <input
-                            id="email"
-                            className="form-control"
-                            type="email"
-                            name="email"
-                            placeholder="name@mail.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                        {errors.email && <div className="text-danger mt-1">{errors.email}</div>}
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <div className="input-group">
-                            <input
-                                id="password"
-                                className="form-control"
-                                placeholder="********"
-                                type={passwordShown ? "text" : "password"}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                            <button
-                                className="btn btn-outline-secondary"
-                                type="button"
-                                onClick={togglePasswordVisiblity}
-                            >
-                                {passwordShown ? (
-                                    <i className="bi bi-eye-slash"></i>
-                                ) : (
-                                    <i className="bi bi-eye"></i>
-                                )}
-                            </button>
-                        </div>
-                        {errors.password && <div className="text-danger mt-1">{errors.password}</div>}
-                    </div>
-                    <button type="submit" className="btn btn-primary w-100">
-                        sign up
-                    </button>
-                    {message && (
-                        <div className={successful ? "alert alert-success text-center mt-4" : "alert alert-danger text-center mt-4"} role="alert">
-                            {message}
-                        </div>
-                    )}
-                    <p className="text-center mt-4">
-                        Already registered?{" "}
-                        <Link to="/login" className="text-primary">
-                            Log In
-                        </Link>
-                    </p>
-                </form>
-            </div>
-        </div>
+            <CardBody className="flex flex-col gap-4 p-6">
+                <Input
+                    label="Username"
+                    size="lg"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    error={errors.username}
+                    className="dark:text-white"
+                    labelProps={{ className: "dark:text-gray-300" }}
+                />
+                <Input
+                    label="Email"
+                    type="email"
+                    size="lg"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    error={errors.email}
+                    className="dark:text-white"
+                    labelProps={{ className: "dark:text-gray-300" }}
+                />
+                <Input
+                    label="Password"
+                    type="password"
+                    size="lg"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    error={errors.password}
+                    className="dark:text-white"
+                    labelProps={{ className: "dark:text-gray-300" }}
+                />
+                <Button type="submit" color="blue" fullWidth onClick={handleRegister}>
+                    <span className="dark:text-white">Sign Up</span>
+                </Button>
+                {message && (
+                    <Typography color={successful ? "green" : "red"} className="text-center mt-4">
+                        {message}
+                    </Typography>
+                )}
+                <Typography color="gray" className="mt-4 text-center font-normal dark:text-gray-400">
+                    Already registered?{' '}
+                    <Link to="/login" className="font-medium text-blue-600 hover:underline dark:text-blue-400">
+                        Log In
+                    </Link>
+                </Typography>
+            </CardBody>
+        </Card>
     );
 };
 

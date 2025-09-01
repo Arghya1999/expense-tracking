@@ -4,7 +4,14 @@ import ExpenseList from '../components/expenses/ExpenseList';
 import { getExpenses, createExpense, updateExpense } from '../services/api';
 import { logout } from '../services/auth.service';
 import { useNavigate } from 'react-router-dom';
-
+import {
+    Card,
+    CardHeader,
+    CardBody,
+    Input,
+    Button,
+    Typography,
+} from "@material-tailwind/react";
 
 const ExpensesPage = () => {
     const [expenses, setExpenses] = useState([]);
@@ -54,54 +61,54 @@ const ExpensesPage = () => {
     };
 
     return (
-        <div className="container py-4">
-            <div className="card mb-4 shadow-sm">
-                <div className="card-header bg-primary text-white text-center py-3">
-                    <h4 className="mb-0">
+        <div className="container mx-auto py-4">
+            <Card className="mb-4 shadow-xl bg-white dark:bg-gray-800 rounded-lg">
+                <CardHeader
+                    variant="gradient"
+                    color="blue"
+                    className="mb-4 grid h-20 place-items-center rounded-t-lg"
+                >
+                    <Typography variant="h4" color="white">
                         Total Expense: ₹{totalExpense.toFixed(2)}
-                    </h4>
-                </div>
-                <div className="card-body d-flex flex-column flex-md-row align-items-end justify-content-center gap-4">
-                    <div className="w-100 w-md-33">
-                        <div className="form-group">
-                            <label htmlFor="startDate" className="form-label">Start Date</label>
-                            <input
-                                type="date"
-                                className="form-control"
-                                id="startDate"
-                                value={startDate}
-                                onChange={(e) => setStartDate(e.target.value)}
-                            />
-                        </div>
+                    </Typography>
+                </CardHeader>
+                <CardBody className="flex flex-col md:flex-row items-end justify-center gap-4 p-6">
+                    <div className="w-full md:w-1/3">
+                        <Input
+                            label="Start Date"
+                            type="date"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                            className="dark:text-white"
+                            labelProps={{ className: "dark:text-gray-300" }}
+                        />
                     </div>
-                    <div className="w-100 w-md-33">
-                        <div className="form-group">
-                            <label htmlFor="endDate" className="form-label">End Date</label>
-                            <input
-                                type="date"
-                                className="form-control"
-                                id="endDate"
-                                value={endDate}
-                                onChange={(e) => setEndDate(e.target.value)}
-                            />
-                        </div>
+                    <div className="w-full md:w-1/3">
+                        <Input
+                            label="End Date"
+                            type="date"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                            className="dark:text-white"
+                            labelProps={{ className: "dark:text-gray-300" }}
+                        />
                     </div>
-                    <div className="w-100 w-md-16">
-                        <button className="btn btn-primary w-100" onClick={handleSearch}>
-                            Search
-                        </button>
+                    <div className="w-full md:w-1/6">
+                        <Button color="blue" fullWidth onClick={handleSearch}>
+                            <span className="dark:text-white">Search</span>
+                        </Button>
                     </div>
-                </div>
-            </div>
-            <div className="row justify-content-center g-4">
-                <div className="col-md-6">
+                </CardBody>
+            </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
                     <ExpenseForm
                         onExpenseCreated={handleExpenseCreated}
                         editingExpense={editingExpense}
                         onExpenseUpdated={handleExpenseUpdated}
                     />
                 </div>
-                <div className="col-md-6">
+                <div>
                     <ExpenseList expenses={expenses} fetchExpenses={fetchExpenses} onEdit={handleEdit} />
                 </div>
             </div>
