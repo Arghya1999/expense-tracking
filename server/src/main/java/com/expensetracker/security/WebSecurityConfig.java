@@ -50,7 +50,9 @@ public class WebSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        // For production, replace "http://localhost:5173" with your actual frontend domain(s).
+        // Consider making this configurable via application properties or environment variables.
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
@@ -68,6 +70,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/api/auth/**").permitAll()
                                 .requestMatchers("/api/test/**").permitAll()
+                                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
                                 .anyRequest().authenticated()
                 );
 

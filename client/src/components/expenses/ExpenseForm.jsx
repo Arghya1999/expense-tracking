@@ -1,6 +1,15 @@
 
 import React, { useState, useEffect } from 'react';
-
+import {
+    Card,
+    CardHeader,
+    CardBody,
+    Input,
+    Button,
+    Select,
+    Option,
+    Typography,
+} from "@material-tailwind/react";
 
 const ExpenseForm = ({ onExpenseCreated, editingExpense, onExpenseUpdated }) => {
     const [description, setDescription] = useState('');
@@ -54,77 +63,69 @@ const ExpenseForm = ({ onExpenseCreated, editingExpense, onExpenseUpdated }) => 
     };
 
     return (
-        <div className="card shadow-sm rounded-3">
-            <div className="card-header bg-primary text-white text-center py-3">
-                <h4 className="mb-0">
+        <Card className="w-full shadow-xl bg-white dark:bg-gray-800 rounded-lg">
+            <CardHeader
+                variant="gradient"
+                color="blue"
+                className="mb-4 grid h-20 place-items-center rounded-t-lg"
+            >
+                <Typography variant="h4" color="white">
                     {editingExpense ? 'Edit Expense' : 'Add Expense'}
-                </h4>
-            </div>
-            <div className="card-body">
-                <form onSubmit={handleSubmit} className="d-flex flex-column gap-4">
-                    <div className="form-group">
-                        <label htmlFor="description">Description</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="description"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            placeholder="e.g., Groceries, Dinner"
-                        />
-                        {errors.description && <div className="text-danger mt-1">{errors.description}</div>}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="amount">Amount</label>
-                        <input
-                            type="number"
-                            className="form-control"
-                            id="amount"
-                            value={amount}
-                            onChange={(e) => setAmount(e.target.value)}
-                            placeholder="e.g., ₹50.00"
-                        />
-                        {errors.amount && <div className="text-danger mt-1">{errors.amount}</div>}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="date">Date</label>
-                        <input
-                            type="date"
-                            className="form-control"
-                            id="date"
-                            value={date}
-                            onChange={(e) => setDate(e.target.value)}
-                        />
-                        {errors.date && <div className="text-danger mt-1">{errors.date}</div>}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="category">Category</label>
-                        <select
-                            className="form-select"
-                            id="category"
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value)}
-                        >
-                            <option value="">Select a category</option>
-                            <option value="FOOD">Food</option>
-                            <option value="HEALTH">Health</option>
-                            <option value="CLOTHING">Clothing</option>
-                            <option value="TRAVEL">Travel</option>
-                            <option value="BILLS">Bills</option>
-                            <option value="OTHERS">Others</option>
-                        </select>
-                        {errors.category && <div className="text-danger mt-1">{errors.category}</div>}
-                    </div>
-
-                    <button type="submit" className="btn btn-primary w-100">
-                        {editingExpense ? 'Update' : 'Add'}
-                    </button>
+                </Typography>
+            </CardHeader>
+            <CardBody className="p-6">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                    <Input
+                        label="Description"
+                        id="description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        error={errors.description}
+                        className="dark:text-white"
+                        labelProps={{ className: "dark:text-gray-300" }}
+                    />
+                    <Input
+                        label="Amount"
+                        id="amount"
+                        type="number"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        error={errors.amount}
+                        className="dark:text-white"
+                        labelProps={{ className: "dark:text-gray-300" }}
+                    />
+                    <Input
+                        label="Date"
+                        id="date"
+                        type="date"
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                        error={errors.date}
+                        className="dark:text-white"
+                        labelProps={{ className: "dark:text-gray-300" }}
+                    />
+                    <Select
+                        label="Category"
+                        id="category"
+                        value={category}
+                        onChange={(value) => setCategory(value)}
+                        error={errors.category}
+                        className="dark:text-white"
+                        labelProps={{ className: "dark:text-gray-300" }}
+                    >
+                        <Option value="FOOD" className="dark:text-white">Food</Option>
+                        <Option value="HEALTH" className="dark:text-white">Health</Option>
+                        <Option value="CLOTHING" className="dark:text-white">Clothing</Option>
+                        <Option value="TRAVEL" className="dark:text-white">Travel</Option>
+                        <Option value="BILLS" className="dark:text-white">Bills</Option>
+                        <Option value="OTHERS" className="dark:text-white">Others</Option>
+                    </Select>
+                    <Button type="submit" color="blue" fullWidth>
+                        <span className="dark:text-white">{editingExpense ? 'Update' : 'Add'}</span>
+                    </Button>
                 </form>
-            </div>
-        </div>
+            </CardBody>
+        </Card>
     );
 };
 

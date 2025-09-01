@@ -1,241 +1,201 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
-import ExpenseList from './components/ExpenseList.jsx';
-import ExpenseForm from './components/ExpenseForm.jsx';
-import Login from './components/Login.jsx';
-import Register from './components/Register.jsx';
-import { getExpenses, createExpense, updateExpense } from './services/api';
+import { Routes, Route, Link, useNavigate } from 'react-router-dom';
+import ExpensesPage from './pages/ExpensesPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 import { getCurrentUser, logout } from './services/auth.service';
-
+import {
+    Navbar,
+    Collapse,
+    Typography,
+    Button,
+    IconButton,
+    Switch,
+} from "@material-tailwind/react";
+import { Bars2Icon } from "@heroicons/react/24/outline";
 
 function App() {
     const [currentUser, setCurrentUser] = useState(undefined);
+    const [openNav, setOpenNav] = useState(false);
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+    const navigate = useNavigate();
 
     useEffect(() => {
-        document.body.className = theme;
+        document.documentElement.classList.toggle('dark', theme === 'dark');
         localStorage.setItem('theme', theme);
     }, [theme]);
 
     const toggleTheme = () => {
         setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
     };
-    const [expenses, setExpenses] = useState([]);
-    const [editingExpense, setEditingExpense] = useState(null);
-    const [totalExpense, setTotalExpense] = useState(0);
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
-    const [isLoading, setIsLoading] = useState(true);
-
-    const navigate = useNavigate();
 
     useEffect(() => {
         const user = getCurrentUser();
         if (user) {
             setCurrentUser(user);
-            fetchExpenses(); // Fetch expenses only if user is logged in
         } else {
-            setIsLoading(false);
+            // Only navigate to login if not already on login or register page
+            if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+                navigate('/login');
+            }
         }
-    }, []);
+    }, [navigate]);
 
     useEffect(() => {
-        const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-        setTotalExpense(total);
-    }, [expenses]);
-
-    const handleSearch = () => {
-        fetchExpenses(startDate, endDate);
-    };
-
-    const fetchExpenses = (start = '', end = '') => {
-        setIsLoading(true);
-        getExpenses(start, end).then(response => {
-            setExpenses(response.data);
-            setIsLoading(false);
-        }).catch(() => {
-            logout();
-            navigate("/login");
-            setIsLoading(false);
-        });
-    };
-
-    const handleExpenseCreated = (expense) => {
-        createExpense(expense).then(() => {
-            fetchExpenses();
-        });
-    };
-
-    const handleExpenseUpdated = (id, expense) => {
-        updateExpense(id, expense).then(() => {
-            fetchExpenses();
-            setEditingExpense(null);
-        });
-    };
-
-    const handleEdit = (expense) => {
-        setEditingExpense(expense);
-    };
+        window.addEventListener(
+            "resize",
+            () => window.innerWidth >= 960 && setOpenNav(false),
+        );
+    }, []);
 
     const logOut = () => {
         logout();
         setCurrentUser(undefined);
-        navigate("/login");
+        navigate('/login');
     };
 
-    return (
-        <div className="container-fluid p-0">
-            <header className="bg-white shadow-sm py-3 mb-4">
-                <div className="container d-flex justify-content-between align-items-center">
-                    <h1 className="h3 mb-0 text-primary">Expense Tracker</h1>
-                    <div className="form-check form-switch ms-3">
-                        <input
-                            className="form-check-input" 
-                            type="checkbox" 
-                            id="darkModeSwitch" 
-                            checked={theme === 'dark'}
-                            onChange={toggleTheme}
-                        />
-                        <label className="form-check-label visually-hidden" htmlFor="darkModeSwitch">Toggle Dark Mode</label>
-                    </div>
-                    {currentUser && (
-                        <nav className="navbar navbar-expand-lg navbar-light">
-                            <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                                <span className="navbar-toggler-icon"></span>
-                            </button>
-                            <div className="collapse navbar-collapse" id="navbarNav">
-                                <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                                    <li className="nav-item">
-                                        <Link to={"/expenses"} className="nav-link active" aria-current="page">
-                                            Expenses
-                                        </Link>
-                                    </li>
-                                </ul>
-                                <ul className="navbar-nav ms-auto">
-                                    <li className="nav-item dropdown">
-                                        <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i className="bi bi-person-circle me-1"></i> {currentUser.username}
-                                        </a>
-                                        <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                            <li><a className="dropdown-item" href="/login" onClick={logOut}>LogOut</a></li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </div>
-                        </nav>
-                    )}
+    const navList = (
+        <ul className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
+            {currentUser && (
+                <Typography
+                    as="li"
+                    variant="small"
+                    color="blue-gray"
+                    className="p-1 font-normal dark:text-white"
+                >
+                    <Link to="/expenses" className="flex items-center">
+                        Expenses
+                    </Link>
+                </Typography>
+            )}
+            <Typography
+                as="li"
+                variant="small"
+                color="blue-gray"
+                className="p-1 font-normal dark:text-white"
+            >
+                <Switch
+                    id="dark-mode-switch"
+                    label="Dark Mode"
+                    checked={theme === 'dark'}
+                    onChange={toggleTheme}
+                    color="blue"
+                />
+            </Typography>
+        </ul>
+    );
 
-                    {!currentUser && (
-                        <nav className="navbar navbar-expand-lg navbar-light">
-                            <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                                <span className="navbar-toggler-icon"></span>
-                            </button>
-                            <div className="collapse navbar-collapse" id="navbarNav">
-                                <ul className="navbar-nav ms-auto">
-                                    <li className="nav-item">
-                                        <Link to={"/login"} className="nav-link btn btn-outline-primary btn-sm me-2">
-                                            Login
-                                        </Link>
-                                    </li>
-                                    <li className="nav-item">
-                                        <Link to={"/register"} className="nav-link btn btn-primary btn-sm">
-                                            Sign Up
-                                        </Link>
-                                    </li>
-                                </ul>
+    return (
+        <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
+            <Navbar className="sticky top-0 z-10 h-max max-w-full rounded-none px-4 py-2 lg:px-8 lg:py-4 bg-white dark:bg-gray-800 shadow-md">
+                <div className="flex items-center justify-between text-blue-gray-900 dark:text-white">
+                    <Typography
+                        as="a"
+                        href="#"
+                        className="mr-4 cursor-pointer py-1.5 font-bold text-xl dark:text-white"
+                    >
+                        Expense Tracker
+                    </Typography>
+                    <div className="flex items-center gap-4">
+                        <div className="mr-4 hidden lg:block">{navList}</div>
+                        {currentUser ? (
+                            <Button
+                                variant="gradient"
+                                size="sm"
+                                className="hidden lg:inline-block"
+                                onClick={logOut}
+                            >
+                                <span>Log Out</span>
+                            </Button>
+                        ) : (
+                            <div className="flex gap-x-1">
+                                <Button
+                                    variant="text"
+                                    size="sm"
+                                    className="hidden lg:inline-block dark:text-white"
+                                    onClick={() => navigate('/login')}
+                                >
+                                    <span>Log In</span>
+                                </Button>
+                                <Button
+                                    variant="gradient"
+                                    size="sm"
+                                    className="hidden lg:inline-block"
+                                    onClick={() => navigate('/register')}
+                                >
+                                    <span>Sign Up</span>
+                                </Button>
                             </div>
-                        </nav>
-                    )}
-                </div>
-            </header>
-            <main className="container py-4 rounded-3">
-                {currentUser && isLoading && (
-                    <div className="text-center py-5">
-                        <div className="spinner-border text-primary" role="status">
-                            <span className="visually-hidden">Loading...</span>
-                        </div>
-                        <p className="mt-3">Loading expenses...</p>
-                    </div>
-                )}
-                {currentUser && !isLoading && (
-                    <>
-                        <div className="card p-4 mb-4 shadow-sm rounded-3">
-                            <h3 className="mb-3 text-center">Total Expense: <span className="text-primary">₹{Math.round(totalExpense)}</span></h3>
-                            <div className="row g-3 align-items-end justify-content-center">
-                                <div className="col-md-4">
-                                    <label htmlFor="startDate" className="form-label">Start Date:</label>
-                                    <input type="date" className="form-control" id="startDate" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                                </div>
-                                <div className="col-md-4">
-                                    <label htmlFor="endDate" className="form-label">End Date:</label>
-                                    <input type="date" className="form-control" id="endDate" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-                                </div>
-                                <div className="col-md-2 d-grid">
-                                    <button className="btn btn-primary" onClick={handleSearch}>Search</button>
-                                </div>
-                            </div>
-                        </div>
-                        <Routes>
-                            <Route path="/login" element={<Login />} />
-                            <Route path="/register" element={<Register />} />
-                            <Route path="/expenses" element={
-                                currentUser ? (
-                                    <div className="row justify-content-center">
-                                        <div className="col-md-6 mb-4">
-                                            <ExpenseForm
-                                                onExpenseCreated={handleExpenseCreated}
-                                                editingExpense={editingExpense}
-                                                onExpenseUpdated={handleExpenseUpdated}
-                                            />
-                                        </div>
-                                        <div className="col-md-6 mb-4">
-                                            <ExpenseList expenses={expenses} fetchExpenses={fetchExpenses} onEdit={handleEdit} />
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <Login />
-                                )
-                            } />
-                            <Route path="/" element={currentUser ? <div className="row justify-content-center">
-                                <div className="col-md-6 mb-4">
-                                    <ExpenseForm
-                                        onExpenseCreated={handleExpenseCreated}
-                                        editingExpense={editingExpense}
-                                        onExpenseUpdated={handleExpenseUpdated}
+                        )}
+                        <IconButton
+                            variant="text"
+                            className="ml-auto h-6 w-6 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden dark:text-white"
+                            ripple={false}
+                            onClick={() => setOpenNav(!openNav)}
+                        >
+                            {openNav ? (
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    className="h-6 w-6"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    strokeWidth={2}
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M6 18L18 6M6 6l12 12"
                                     />
-                                </div>
-                                <div className="col-md-6 mb-4">
-                                    <ExpenseList expenses={expenses} fetchExpenses={fetchExpenses} onEdit={handleEdit} />
-                                </div>
-                            </div> : <Login />} />
-                        </Routes>
-                    </>
-                )}
-                {!currentUser && (
-                    <Routes>
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/register" element={<Register />} />
-                        <Route path="/expenses" element={<Login />} />
-                        <Route path="/" element={<Login />} />
-                    </Routes>
-                )}
+                                </svg>
+                            ) : (
+                                <Bars2Icon className="h-6 w-6" />
+                            )}
+                        </IconButton>
+                    </div>
+                </div>
+                <Collapse open={openNav}>
+                    {navList}
+                    {currentUser ? (
+                        <Button fullWidth variant="gradient" size="sm" className="mb-2" onClick={logOut}>
+                            <span>Log Out</span>
+                        </Button>
+                    ) : (
+                        <div className="flex flex-col gap-x-1">
+                            <Button fullWidth variant="text" size="sm" className="mb-2 dark:text-white" onClick={() => navigate('/login')}>
+                                <span>Log In</span>
+                            </Button>
+                            <Button fullWidth variant="gradient" size="sm" className="mb-2" onClick={() => navigate('/register')}>
+                                <span>Sign Up</span>
+                            </Button>
+                        </div>
+                    )}
+                </Collapse>
+            </Navbar>
+            <main className="container mx-auto mt-4 flex-grow">
+                <Routes>
+                    <Route path="/" element={currentUser ? <ExpensesPage /> : <LoginPage />} />
+                    <Route path="/expenses" element={currentUser ? <ExpensesPage /> : <LoginPage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegisterPage />} />
+                </Routes>
             </main>
 
-            <footer className="bg-dark text-white py-4 mt-5">
-                <div className="container text-center">
-                    <div className="row">
-                        <div className="col-md-4 mb-3 mb-md-0">
-                            <h5>Contact Us</h5>
-                            <p className="mb-0">Mobile: 9734187531</p>
-                            <p className="mb-0">Email: panarghya2015@gmail.com</p>
+            <footer className="bg-blue-gray-800 text-white py-4 mt-5 dark:bg-gray-900">
+                <div className="container mx-auto text-center">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <Typography variant="h6" color="white" className="mb-2">Contact Us</Typography>
+                            <Typography color="white" className="text-sm">Mobile: 9734187531</Typography>
+                            <Typography color="white" className="text-sm">Email: panarghya2015@gmail.com</Typography>
                         </div>
-                        <div className="col-md-4 mb-3 mb-md-0">
-                            <h5>Pan Company</h5>
-                            <p className="mb-0">&copy; {new Date().getFullYear()} Pan. All rights reserved.</p>
+                        <div>
+                            <Typography variant="h6" color="white" className="mb-2">Pan Company</Typography>
+                            <Typography color="white" className="text-sm">&copy; {new Date().getFullYear()} Pan. All rights reserved.</Typography>
                         </div>
-                        <div className="col-md-4">
-                            <h5>About Us</h5>
-                            <p className="mb-0">Your go-to solution for tracking and managing personal expenses efficiently.</p>
+                        <div>
+                            <Typography variant="h6" color="white" className="mb-2">About Us</Typography>
+                            <Typography color="white" className="text-sm">Your go-to solution for tracking and managing personal expenses efficiently.</Typography>
                         </div>
                     </div>
                 </div>
