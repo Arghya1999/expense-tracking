@@ -1,0 +1,57 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - dockerize # Also run on the dockerize branch for testing
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21 for Backend
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: 'maven'
+
+    - name: Build and Test Backend
+      run: |
+        cd server
+        mvn clean install -DskipTests
+        mvn test
+
+    - name: Set up Node.js for Frontend
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20' # Use a recent LTS version
+        cache: 'npm'
+        cache-dependency-path: client/package-lock.json
+
+    - name: Install Frontend Dependencies
+      run: |
+        cd client
+        npm install
+
+    - name: Build Frontend
+      run: |
+        cd client
+        npm run build
+
+    - name: Test Frontend
+      run: |
+        cd client
+        npm test -- --watchAll=false # Run tests once, not in watch mode
+
+    - name: Build Docker Images
+      run: |
+        docker-compose build
