@@ -7,58 +7,57 @@ import * as authService from '../../services/auth.service';
 jest.mock('../../services/auth.service');
 jest.mock('react-router-dom', () => ({
     useNavigate: () => jest.fn(),
-    Link: ({ to, children }) => <a href={to}>{children}</a>, // Mock Link component
+    Link: ({ to, children }) => <a href={to}>{children}</a>,
 }));
 
-describe('Login', () => {
-    afterEach(() => {
-        jest.restoreAllMocks();
-    });
-    
-    
-    
+describe('LoginForm', () => {
     it('renders the login form', () => {
-        const mockReload = jest.fn();
-        render(<Login reload={mockReload} />);
-        expect(screen.getByLabelText(/username or email/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
-        expect(screen.getByText(/Not registered\?/i)).toBeInTheDocument();
-        expect(screen.getByRole('link', { name: /Create an account/i })).toBeInTheDocument();
+        render(<LoginForm />);
+        expect(screen.getByRole('textbox', { name: /username or email/i })).toBeInTheDocument();
+        expect(screen.getByRole('textbox', { name: /password/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
+    });
+
+    it('shows validation errors for empty fields', async () => {
+        render(<LoginForm />);
+        fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+
+        await waitFor(() => {
+            expect(screen.getByText(/Username or Email is required/i)).toBeInTheDocument();
+        });
+        await waitFor(() => {
+            expect(screen.getByText(/Password is required/i)).toBeInTheDocument();
+        });
     });
 
     it('calls login service and navigates on successful login', async () => {
         authService.login.mockResolvedValueOnce({});
         const navigateMock = jest.fn();
         jest.spyOn(require('react-router-dom'), 'useNavigate').mockReturnValue(navigateMock);
-        const mockReload = jest.fn();
 
-        render(<Login reload={mockReload} />);
+        render(<LoginForm />);
 
-        fireEvent.change(screen.getByLabelText(/username or email/i), { target: { value: 'testuser' } });
-        fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'testpassword' } });
+        fireEvent.change(screen.getByRole('textbox', { name: /username or email/i }), { target: { value: 'testuser' } });
+        fireEvent.change(screen.getByRole('textbox', { name: /password/i }), { target: { value: 'testpassword' } });
 
-        fireEvent.click(screen.getByRole('button', { name: /login/i }));
+        fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
         await waitFor(() => {
             expect(authService.login).toHaveBeenCalledWith('testuser', 'testpassword');
             expect(navigateMock).toHaveBeenCalledWith('/expenses');
-            
-            
         });
     });
 
     it('displays error message on failed login', async () => {
         const errorMessage = 'Login failed';
         authService.login.mockRejectedValueOnce({ response: { data: { message: errorMessage } } });
-        const mockReload = jest.fn();
 
-        render(<Login reload={mockReload} />);
+        render(<LoginForm />);
 
-        fireEvent.change(screen.getByLabelText(/username or email/i), { target: { value: 'testuser' } });
-        fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'wrongpassword' } });
+        fireEvent.change(screen.getByRole('textbox', { name: /username or email/i }), { target: { value: 'testuser' } });
+        fireEvent.change(screen.getByRole('textbox', { name: /password/i }), { target: { value: 'wrongpassword' } });
 
-        fireEvent.click(screen.getByRole('button', { name: /login/i }));
+        fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
         await waitFor(() => {
             expect(screen.getByText(errorMessage)).toBeInTheDocument();

@@ -12,34 +12,40 @@ jest.mock('react-router-dom', () => ({
 describe('Register', () => {
     it('renders the registration form', () => {
         render(<RegisterForm />);
-        expect(screen.getByLabelText(/username/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+        expect(screen.getByRole('textbox', { name: /username/i })).toBeInTheDocument();
+        expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument();
+        expect(screen.getByRole('textbox', { name: /password/i })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /sign up/i })).toBeInTheDocument();
     });
 
-    it('shows password length error for short password', () => {
+    it('shows password length error for short password', async () => {
         render(<RegisterForm />);
-        const passwordInput = screen.getByLabelText(/password/i);
+        const passwordInput = screen.getByRole('textbox', { name: /password/i });
         fireEvent.change(passwordInput, { target: { value: 'short' } });
         fireEvent.blur(passwordInput); // Trigger validation on blur
-        expect(screen.getByText(/the password must be between 6 and 40 characters./i)).toBeInTheDocument();
+        await waitFor(() => {
+            expect(screen.getByText(/the password must be between 6 and 40 characters./i)).toBeInTheDocument();
+        });
     });
 
-    it('shows password length error for long password', () => {
+    it('shows password length error for long password', async () => {
         render(<RegisterForm />);
-        const passwordInput = screen.getByLabelText(/password/i);
+        const passwordInput = screen.getByRole('textbox', { name: /password/i });
         fireEvent.change(passwordInput, { target: { value: 'a'.repeat(41) } });
         fireEvent.blur(passwordInput); // Trigger validation on blur
-        expect(screen.getByText(/the password must be between 6 and 40 characters./i)).toBeInTheDocument();
+        await waitFor(() => {
+            expect(screen.getByText(/the password must be between 6 and 40 characters./i)).toBeInTheDocument();
+        });
     });
 
-    it('does not show password error for valid password', () => {
+    it('does not show password error for valid password', async () => {
         render(<RegisterForm />);
-        const passwordInput = screen.getByLabelText(/password/i);
+        const passwordInput = screen.getByRole('textbox', { name: /password/i });
         fireEvent.change(passwordInput, { target: { value: 'validpassword' } });
         fireEvent.blur(passwordInput); // Trigger validation on blur
-        expect(screen.queryByText(/the password must be between 6 and 40 characters./i)).not.toBeInTheDocument();
+        await waitFor(() => {
+            expect(screen.queryByText(/the password must be between 6 and 40 characters./i)).not.toBeInTheDocument();
+        });
     });
 
     it('calls register service and navigates on successful registration', async () => {
@@ -49,9 +55,9 @@ describe('Register', () => {
 
         render(<RegisterForm />);
 
-        fireEvent.change(screen.getByLabelText(/username/i), { target: { value: 'testuser' } });
-        fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@example.com' } });
-        fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'testpassword' } });
+        fireEvent.change(screen.getByRole('textbox', { name: /username/i }), { target: { value: 'testuser' } });
+        fireEvent.change(screen.getByRole('textbox', { name: /email/i }), { target: { value: 'test@example.com' } });
+        fireEvent.change(screen.getByRole('textbox', { name: /password/i }), { target: { value: 'testpassword' } });
 
         fireEvent.click(screen.getByRole('button', { name: /sign up/i }));
 
@@ -68,9 +74,9 @@ describe('Register', () => {
 
         render(<RegisterForm />);
 
-        fireEvent.change(screen.getByLabelText(/username/i), { target: { value: 'testuser' } });
-        fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@example.com' } });
-        fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'testpassword' } });
+        fireEvent.change(screen.getByRole('textbox', { name: /username/i }), { target: { value: 'testuser' } });
+        fireEvent.change(screen.getByRole('textbox', { name: /email/i }), { target: { value: 'test@example.com' } });
+        fireEvent.change(screen.getByRole('textbox', { name: /password/i }), { target: { value: 'testpassword' } });
 
         fireEvent.click(screen.getByRole('button', { name: /sign up/i }));
 
