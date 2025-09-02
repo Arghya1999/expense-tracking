@@ -12,6 +12,20 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    services: # Add services block here
+      postgres:
+        image: postgres:13 # Use a specific PostgreSQL version
+        env:
+          POSTGRES_DB: expensetrackerdb # Match your application.yml database name
+          POSTGRES_USER: postgres # Match your application.yml username
+          POSTGRES_PASSWORD: password # Match your application.yml password
+        ports:
+          - 5432:5432 # Map container port to host port
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
     - name: Checkout code
@@ -27,8 +41,9 @@ jobs:
     - name: Build and Test Backend
       run: |
         cd server
-        mvn clean install -DskipTests
-        mvn test
+        mvn test -Dspring.datasource.url=jdbc:postgresql://localhost:5432/expensetrackerdb \
+                 -Dspring.datasource.username=postgres \
+                 -Dspring.datasource.password=password
 
     - name: Set up Node.js for Frontend
       uses: actions/setup-node@v4
@@ -53,5 +68,5 @@ jobs:
         npm test -- --watchAll=false # Run tests once, not in watch mode
 
     - name: Build Docker Images
-      run: |
+      run:
         docker-compose build
