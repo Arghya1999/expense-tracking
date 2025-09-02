@@ -42,7 +42,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return java.util.Collections.emptyList();
     }
 
     public Long getId() {

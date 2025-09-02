@@ -1,57 +1,64 @@
-
-
 version: '3.8'
 
 services:
-  backend:
+  expensetracker-backend:
     build: ./server
+    container_name: expensetracker-backend-v1
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mydb
-      SPRING_DATASOURCE_USERNAME: mydb
-      SPRING_DATASOURCE_PASSWORD: arghya
-      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATASOURCE_URL: jdbc:postgresql://expensetracker-db:5432/mydb
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      SPRING_DATA_REDIS_HOST: expensetracker-redis
       SPRING_DATA_REDIS_PORT: 6379
     depends_on:
-      - db
-      - redis
+      - expensetracker-db
+      - expensetracker-redis
     networks:
-      - expensetracker-network
+      - expensetracker-network-v1
+    restart: always
 
-  frontend:
+  expensetracker-frontend:
     build: ./client
+    container_name: expensetracker-frontend-v1
     ports:
       - "80:80"
     depends_on:
-      - backend
+      - expensetracker-backend
     networks:
-      - expensetracker-network
+      - expensetracker-network-v1
+    restart: always
 
-  db:
-    image: postgres:16.2-alpine # Using a specific version of PostgreSQL
+  expensetracker-db:
+    image: postgres:16.2-alpine
+    container_name: expensetracker-db-v1
     environment:
       POSTGRES_DB: mydb
-      POSTGRES_USER: mydb
-      POSTGRES_PASSWORD: arghya
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - expensetracker-db-data-v1:/var/lib/postgresql/data
     networks:
-      - expensetracker-network
+      - expensetracker-network-v1
+    restart: always
 
-  redis:
-    image: redis:7.2.5-alpine # Using a specific version of Redis
+  expensetracker-redis:
+    image: redis:7.2.5-alpine
+    container_name: expensetracker-redis-v1
     ports:
       - "6379:6379"
     networks:
-      - expensetracker-network
+      - expensetracker-network-v1
+    restart: always
 
 networks:
-  expensetracker-network:
+  expensetracker-network-v1:
     driver: bridge
 
 volumes:
-  db_data:
+  expensetracker-db-data-v1:
 

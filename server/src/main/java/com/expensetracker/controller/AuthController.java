@@ -9,6 +9,8 @@ import com.expensetracker.repository.UserRepository;
 import com.expensetracker.security.jwt.JwtUtils;
 import com.expensetracker.security.services.UserDetailsImpl;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,11 +18,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
@@ -39,31 +40,15 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        logger.info("Attempting to authenticate user: {}", loginRequest.getUsername() != null ? loginRequest.getUsername() : loginRequest.getEmail());
-        String identifier;
-
-        if (loginRequest.getEmail() != null && !loginRequest.getEmail().isEmpty()) {
-            identifier = loginRequest.getEmail();
-            logger.debug("Authenticating by email: {}", identifier);
-        } else if (loginRequest.getUsername() != null && !loginRequest.getUsername().isEmpty()) {
-            identifier = loginRequest.getUsername();
-            logger.debug("Authenticating by username: {}", identifier);
-        } else {
-            logger.warn("Authentication failed: Username or Email not provided.");
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Username or Email must be provided!"));
-        }
-
+        logger.info("Attempting to authenticate user: {}", loginRequest.getUsername());
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(identifier, loginRequest.getPassword()));
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         logger.info("User {} authenticated successfully.", userDetails.getUsername());
-
         return ResponseEntity.ok(new JwtResponse(jwt,
                 userDetails.getId(),
                 userDetails.getUsername(),
@@ -93,8 +78,7 @@ public class AuthController {
                 encoder.encode(signUpRequest.getPassword()));
 
         userRepository.save(user);
-        logger.info("User {} registered successfully.", signUpRequest.getUsername());
-
+        logger.info("User {} registered successfully.", user.getUsername());
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 }
