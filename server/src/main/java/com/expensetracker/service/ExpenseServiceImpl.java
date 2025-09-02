@@ -4,14 +4,11 @@ import com.expensetracker.exception.ExpenseNotFoundException;
 import com.expensetracker.model.Expense;
 import com.expensetracker.model.User;
 import com.expensetracker.repository.ExpenseRepository;
-import com.expensetracker.repository.UserRepository;
-import com.expensetracker.security.services.UserDetailsImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -23,18 +20,11 @@ public class ExpenseServiceImpl implements ExpenseService {
     private static final Logger logger = LoggerFactory.getLogger(ExpenseServiceImpl.class);
 
     private final ExpenseRepository expenseRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public ExpenseServiceImpl(ExpenseRepository expenseRepository, UserRepository userRepository) {
+    public ExpenseServiceImpl(ExpenseRepository expenseRepository, UserService userService) {
         this.expenseRepository = expenseRepository;
-        this.userRepository = userRepository;
-    }
-
-    // Helper method to get current user's ID
-    private User getCurrentUser() {
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new RuntimeException("Error: User not found."));
+        this.userService = userService;
     }
 
     @Override
@@ -73,7 +63,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     @CacheEvict(value = "expenses", allEntries = true) // Still clearing all for simplicity, but ideally more granular
     @CachePut(value = "expense", key = "#expense.user.id + ':' + #expense.id")
     public Expense createExpense(Expense expense) {
-        User currentUser = getCurrentUser();
+        User currentUser = userService.getCurrentUser();
         expense.setUser(currentUser); // Set user before saving
         logger.info("Creating new expense from service for user {}: {}", currentUser.getId(), expense.getDescription());
         Expense createdExpense = expenseRepository.save(expense);

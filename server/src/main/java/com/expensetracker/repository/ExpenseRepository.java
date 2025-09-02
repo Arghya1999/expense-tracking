@@ -13,8 +13,5 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     List<Expense> findByUserAndDateBetween(User user, LocalDate startDate, LocalDate endDate);
     List<Expense> findByUserAndDateAfter(User user, LocalDate date);
     List<Expense> findByUserAndDateBefore(User user, LocalDate date);
-    List<Expense> findByDate(LocalDate date);
-    List<Expense> findByDateBetween(LocalDate startDate, LocalDate endDate);
-    List<Expense> findByDateAfter(LocalDate date);
-    List<Expense> findByDateBefore(LocalDate date);
+    
 }
