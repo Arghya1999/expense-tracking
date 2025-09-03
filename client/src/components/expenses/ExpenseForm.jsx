@@ -1,5 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
     Card,
     CardHeader,
@@ -78,38 +78,45 @@ const ExpenseForm = ({ onExpenseCreated, editingExpense, onExpenseUpdated }) => 
                     <Input
                         label="Description"
                         id="description"
+                        data-testid="expense-description-input"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        error={errors.description}
+                        error={!!errors.description}
                         className="dark:text-white"
                         labelProps={{ className: "dark:text-gray-300" }}
                     />
+                    {errors.description && <span className="text-red-500">{errors.description}</span>}
                     <Input
                         label="Amount"
                         id="amount"
                         type="number"
+                        data-testid="expense-amount-input"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
-                        error={errors.amount}
+                        error={!!errors.amount}
                         className="dark:text-white"
                         labelProps={{ className: "dark:text-gray-300" }}
                     />
+                    {errors.amount && <span className="text-red-500">{errors.amount}</span>}
                     <Input
                         label="Date"
                         id="date"
                         type="date"
+                        data-testid="expense-date-input"
                         value={date}
                         onChange={(e) => setDate(e.target.value)}
-                        error={errors.date}
+                        error={!!errors.date}
                         className="dark:text-white"
                         labelProps={{ className: "dark:text-gray-300" }}
                     />
+                    {errors.date && <span className="text-red-500">{errors.date}</span>}
                     <Select
                         label="Category"
                         id="category"
+                        data-testid="expense-category-select"
                         value={category}
                         onChange={(value) => setCategory(value)}
-                        error={errors.category}
+                        error={!!errors.category}
                         className="dark:text-white"
                         labelProps={{ className: "dark:text-gray-300" }}
                     >
@@ -120,6 +127,7 @@ const ExpenseForm = ({ onExpenseCreated, editingExpense, onExpenseUpdated }) => 
                         <Option value="BILLS" className="dark:text-white">Bills</Option>
                         <Option value="OTHERS" className="dark:text-white">Others</Option>
                     </Select>
+                    {errors.category && <span className="text-red-500">{errors.category}</span>}
                     <Button type="submit" color="blue" fullWidth>
                         <span className="dark:text-white">{editingExpense ? 'Update' : 'Add'}</span>
                     </Button>
@@ -127,6 +135,22 @@ const ExpenseForm = ({ onExpenseCreated, editingExpense, onExpenseUpdated }) => 
             </CardBody>
         </Card>
     );
+};
+
+ExpenseForm.propTypes = {
+    onExpenseCreated: PropTypes.func.isRequired,
+    editingExpense: PropTypes.shape({
+        id: PropTypes.number,
+        description: PropTypes.string,
+        amount: PropTypes.number,
+        category: PropTypes.string,
+        date: PropTypes.string,
+    }),
+    onExpenseUpdated: PropTypes.func.isRequired,
+};
+
+ExpenseForm.defaultProps = {
+    editingExpense: null,
 };
 
 export default ExpenseForm;

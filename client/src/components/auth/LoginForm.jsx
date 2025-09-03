@@ -35,7 +35,6 @@ const LoginForm = () => {
         try {
             await login(identifier, password);
             navigate('/expenses');
-            window.location.reload();
         } catch (error) {
             const resMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
             setMessage(resMessage);
@@ -52,24 +51,30 @@ const LoginForm = () => {
             </div>
             <CardBody className="flex flex-col gap-4 p-6">
                 <Input
+                    id="identifier"
                     label="Username or Email"
                     size="lg"
+                    data-testid="login-identifier-input"
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
-                    error={errors.identifier}
+                    error={!!errors.identifier}
                     className="dark:text-white"
                     labelProps={{ className: "dark:text-gray-300" }}
                 />
+                {errors.identifier && <span className="text-red-500">{errors.identifier}</span>}
                 <Input
+                    id="password"
                     label="Password"
                     type="password"
                     size="lg"
+                    data-testid="login-password-input"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    error={errors.password}
+                    error={!!errors.password}
                     className="dark:text-white"
                     labelProps={{ className: "dark:text-gray-300" }}
                 />
+                {errors.password && <span className="text-red-500">{errors.password}</span>}
                 <Button type="submit" color="blue" fullWidth onClick={handleLogin}>
                     <span className="dark:text-white">Sign In</span>
                 </Button>
@@ -79,7 +84,7 @@ const LoginForm = () => {
                     </Typography>
                 )}
                 <Typography color="gray" className="mt-4 text-center font-normal dark:text-gray-400">
-                    Don't have an account?{' '}
+                    Don&apos;t have an account?{' '}
                     <Link to="/register" className="font-medium text-blue-600 hover:underline dark:text-blue-400">
                         Sign up
                     </Link>

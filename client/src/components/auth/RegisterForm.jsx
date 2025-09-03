@@ -71,32 +71,38 @@ const RegisterForm = () => {
                 <Input
                     label="Username"
                     size="lg"
+                    data-testid="register-username-input"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    error={errors.username}
+                    error={!!errors.username}
                     className="dark:text-white"
                     labelProps={{ className: "dark:text-gray-300" }}
                 />
+                {errors.username && <span className="text-red-500">{errors.username}</span>}
                 <Input
                     label="Email"
                     type="email"
                     size="lg"
+                    data-testid="register-email-input"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    error={errors.email}
+                    error={!!errors.email}
                     className="dark:text-white"
                     labelProps={{ className: "dark:text-gray-300" }}
                 />
+                {errors.email && <span className="text-red-500">{errors.email}</span>}
                 <Input
                     label="Password"
                     type="password"
                     size="lg"
+                    data-testid="register-password-input"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    error={errors.password}
+                    error={!!errors.password}
                     className="dark:text-white"
                     labelProps={{ className: "dark:text-gray-300" }}
                 />
+                {errors.password && <span className="text-red-500">{errors.password}</span>}
                 <Button type="submit" color="blue" fullWidth onClick={handleRegister}>
                     <span className="dark:text-white">Sign Up</span>
                 </Button>

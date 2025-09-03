@@ -1,5 +1,5 @@
-
 import React from 'react';
+import PropTypes from 'prop-types';
 import { deleteExpense } from '../../services/api';
 import {
     Card,
@@ -47,10 +47,10 @@ const ExpenseList = ({ expenses, fetchExpenses, onEdit }) => {
                             </div>
                             <ListItemSuffix className="flex items-center gap-2 mt-2 md:mt-0">
                                 <Typography variant="h6" color="green" className="dark:text-green-400">₹{expense.amount.toFixed(2)}</Typography>
-                                <IconButton variant="text" color="blue" onClick={() => onEdit(expense)} className="dark:text-white">
+                                <IconButton variant="text" color="blue" onClick={() => onEdit(expense)} className="dark:text-white" data-testid={`edit-button-${expense.id}`}>
                                     <PencilIcon className="h-5 w-5" />
                                 </IconButton>
-                                <IconButton variant="text" color="red" onClick={() => handleDelete(expense.id)} className="dark:text-red-400">
+                                <IconButton variant="text" color="red" onClick={() => handleDelete(expense.id)} className="dark:text-red-400" data-testid={`delete-button-${expense.id}`}>
                                     <TrashIcon className="h-5 w-5" />
                                 </IconButton>
                             </ListItemSuffix>
@@ -62,5 +62,16 @@ const ExpenseList = ({ expenses, fetchExpenses, onEdit }) => {
     );
 };
 
-export default ExpenseList;
+ExpenseList.propTypes = {
+    expenses: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        description: PropTypes.string.isRequired,
+        amount: PropTypes.number.isRequired,
+        category: PropTypes.string.isRequired,
+        date: PropTypes.string.isRequired,
+    })).isRequired,
+    fetchExpenses: PropTypes.func.isRequired,
+    onEdit: PropTypes.func.isRequired,
+};
 
+export default ExpenseList;

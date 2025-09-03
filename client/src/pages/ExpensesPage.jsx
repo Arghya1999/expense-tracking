@@ -11,6 +11,7 @@ import {
     Input,
     Button,
     Typography,
+    Spinner
 } from "@material-tailwind/react";
 
 const ExpensesPage = () => {
@@ -19,6 +20,8 @@ const ExpensesPage = () => {
     const [totalExpense, setTotalExpense] = useState(0);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -35,11 +38,18 @@ const ExpensesPage = () => {
     };
 
     const fetchExpenses = (start = '', end = '') => {
+        setLoading(true);
+        setError(null);
         getExpenses(start, end).then(response => {
             setExpenses(response.data);
-        }).catch(() => {
-            logout();
-            navigate("/login");
+            setLoading(false);
+        }).catch(err => {
+            setError('Failed to fetch expenses. Please try again later.');
+            setLoading(false);
+            if (err.response && err.response.status === 401) {
+                logout();
+                navigate("/login");
+            }
         });
     };
 
@@ -75,6 +85,8 @@ const ExpensesPage = () => {
                 <CardBody className="flex flex-col md:flex-row items-end justify-center gap-4 p-6">
                     <div className="w-full md:w-1/3">
                         <Input
+                            id="start-date"
+                            data-testid="start-date-input"
                             label="Start Date"
                             type="date"
                             value={startDate}
@@ -85,6 +97,8 @@ const ExpensesPage = () => {
                     </div>
                     <div className="w-full md:w-1/3">
                         <Input
+                            id="end-date"
+                            data-testid="end-date-input"
                             label="End Date"
                             type="date"
                             value={endDate}
@@ -100,6 +114,9 @@ const ExpensesPage = () => {
                     </div>
                 </CardBody>
             </Card>
+
+            {error && <Typography color="red" className="text-center mb-4">{error}</Typography>}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <ExpenseForm
@@ -109,7 +126,13 @@ const ExpensesPage = () => {
                     />
                 </div>
                 <div>
-                    <ExpenseList expenses={expenses} fetchExpenses={fetchExpenses} onEdit={handleEdit} />
+                    {loading ? (
+                        <div className="flex justify-center items-center h-full">
+                            <Spinner className="h-12 w-12" data-testid="loading-spinner" />
+                        </div>
+                    ) : (
+                        <ExpenseList expenses={expenses} fetchExpenses={fetchExpenses} onEdit={handleEdit} />
+                    )}
                 </div>
             </div>
         </div>

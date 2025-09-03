@@ -1,8 +1,7 @@
 
 import axios from 'axios';
 import authHeader from './auth-header';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { API_BASE_URL } from '../config';
 
 export const getExpenses = (startDate = '', endDate = '') => {
     let url = `${API_BASE_URL}/expenses`;
