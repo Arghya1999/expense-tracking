@@ -67,6 +67,11 @@ jobs:
         cd client
         npm test -- --watchAll=false # Run tests once, not in watch mode
 
+    - name: Install Docker Compose
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y docker-compose-plugin
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
