@@ -67,6 +67,9 @@ jobs:
         cd client
         npm test -- --watchAll=false # Run tests once, not in watch mode
 
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
     - name: Build Docker Images
       run:
         docker-compose build
