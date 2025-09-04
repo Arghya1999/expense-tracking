@@ -1,160 +1,196 @@
-
 # Expense Tracker Application
 
-The Expense Tracker is a robust, full-stack application meticulously engineered to provide users with a seamless and secure platform for managing their personal finances. Leveraging modern web technologies, this application empowers users to effortlessly track, categorize, and analyze their expenditures, fostering better financial habits and informed financial decision-making.
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
 
-## Core Capabilities
+The Expense Tracker is a robust, full-stack application engineered to provide users with a seamless and secure platform for managing personal finances. Leveraging modern web technologies, this application empowers users to effortlessly track, categorize, and analyze their expenditures.
 
-*   **Secure User Authentication:** Robust user registration and login functionalities, ensuring data privacy and secure access to personal expense records.
-*   **Comprehensive Expense Management:** Intuitive interface for adding, viewing, updating, and deleting expense entries, providing granular control over financial data.
-*   **RESTful API with JWT Security:** A highly secure backend API, protected by JSON Web Tokens (JWT), ensuring authenticated and authorized interactions.
-*   **Automated Database Migrations:** Utilizes Flyway for reliable and version-controlled database schema management, simplifying deployment and updates.
-*   **Containerized Deployment:** Fully Dockerized for consistent and scalable deployment across various environments, streamlining development and production workflows.
+## ✨ Core Features
 
-## Technologies Used
+*   **Secure User Authentication:** Robust user registration and login functionalities using JWT.
+*   **Comprehensive Expense Management:** Intuitive interface for adding, viewing, updating, and deleting expense entries.
+*   **RESTful API:** A secure backend API for all data interactions.
+*   **Containerized Deployment:** Fully containerized with Docker and Docker Compose for easy setup and deployment.
+*   **CI/CD Pipeline:** Automated build and test pipeline using GitHub Actions.
 
-### Backend (Server)
+## 🛠️ Technology Stack
 
-*   **Framework:** Spring Boot
-*   **Security:** Spring Security, JWT (JSON Web Tokens)
-*   **Database:** PostgreSQL
-*   **ORM/Data Access:** Spring Data JPA
-*   **Database Migrations:** Flyway
-*   **API Documentation:** SpringDoc OpenAPI (Swagger UI)
-*   **Caching:** Spring Data Redis
-*   **Build Tool:** Maven
-*   **Utility:** Lombok
-*   **Language:** Java 21
+| Category      | Technology                                       |
+| ------------- | ------------------------------------------------ |
+| **Backend**   | Java 21, Spring Boot, Spring Security (JWT)      |
+| **Frontend**  | React, Vite, Tailwind CSS                        |
+| **Database**  | PostgreSQL, Redis (for Caching)                  |
+| **DevOps**    | Docker, Docker Compose, GitHub Actions           |
+| **Build Tools** | Maven (Backend), npm (Frontend)                  |
 
-### Frontend (Client)
+## 🚀 Getting Started
 
-*   **Framework:** React
-*   **Build Tool:** Vite
-*   **Styling:** Tailwind CSS, PostCSS
-*   **Linting:** ESLint
-*   **Testing:** Jest
-*   **Package Manager:** npm
-*   **Language:** JavaScript (JSX)
-
-## Setup and Installation
+This project is fully containerized, making the setup process simple and consistent.
 
 ### Prerequisites
 
-Before you begin, ensure you have the following installed:
+*   [Git](https://git-scm.com/)
+*   [Docker](https://www.docker.com/products/docker-desktop/)
 
-*   Git
-*   Java Development Kit (JDK) 21 or higher
-*   Apache Maven
-*   Node.js (LTS version recommended)
-*   npm (comes with Node.js)
-*   PostgreSQL database server
-*   Docker and Docker Compose (for containerized setup)
-
-### Backend Setup
+### Installation
 
 1.  **Clone the repository:**
     ```bash
-    git clone <repository_url>
-    cd expense-tracker
+    git clone https://github.com/Arghya1999/expense-tracking.git
+    cd expense-tracking
     ```
-2.  **Navigate to the server directory:**
+
+2.  **Create your environment file:**
+    Create a file named `.env` in the root of the project and add the following content. Replace the placeholder values with your own credentials.
+    ```env
+    DB_USER=your_database_user
+    DB_PASSWORD=your_database_password
+    JWT_SECRET=your_super_secret_jwt_key
+    ```
+
+3.  **Build and run the application:**
     ```bash
-    cd server
-    ```
-3.  **Configure Database:**
-    *   Create a PostgreSQL database (e.g., `expensetracker_db`).
-    *   Update the database connection properties in `src/main/resources/application.yml` to match your PostgreSQL setup.
-        ```yaml
-        spring:
-          datasource:
-            url: jdbc:postgresql://localhost:5432/expensetracker_db
-            username: your_username
-            password: your_password
-          jpa:
-            hibernate:
-              ddl-auto: none # Flyway handles schema
-          flyway:
-            enabled: true
-            locations: classpath:db/migration
-        ```
-4.  **Build the backend:**
-    ```bash
-    mvn clean install
+    docker compose up --build
     ```
 
-### Frontend Setup
+Your application should now be running! 
+*   The frontend will be accessible at `http://localhost:80`
+*   The backend API is available at `http://localhost:8080`
 
-1.  **Navigate to the client directory:**
-    ```bash
-    cd ../client
-    ```
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
+## 📖 API Documentation
 
-## Running the Application
+The API is secured using JWT. After signing in, you must include the received token in the `Authorization` header for all subsequent requests to protected endpoints.
 
-### Running Locally (Backend and Frontend Separately)
+**Header Format:** `Authorization: Bearer <YOUR_JWT_TOKEN>`
 
-#### Backend
+--- 
 
-1.  Ensure you are in the `server` directory.
-2.  Run the Spring Boot application:
-    ```bash
-    mvn spring-boot:run
-    ```
-    The backend server will start on `http://localhost:8080` by default.
+### Authentication
 
-#### Frontend
+#### `POST /api/v1/auth/signup`
 
-1.  Ensure you are in the `client` directory.
-2.  Start the React development server:
-    ```bash
-    npm run dev
-    ```
-    The frontend application will typically be available at `http://localhost:5173` (or another port if 5173 is in use).
+Registers a new user.
 
-### Running with Docker Compose (Recommended)
+**Request Body:**
+```json
+{
+  "username": "testuser",
+  "email": "test@example.com",
+  "password": "password123"
+}
+```
 
-1.  Ensure you are in the root directory of the project (where `docker-compose.yml` is located).
-2.  Build and start the services:
-    ```bash
-    docker-compose up --build
-    ```
-    This will build Docker images for both the client and server, and start them along with a PostgreSQL database and Nginx proxy.
-    *   The frontend will be accessible via Nginx, usually at `http://localhost`.
-    *   The backend API will be accessible internally within the Docker network.
+**Success Response (200 OK):**
+```json
+{
+  "message": "User registered successfully!"
+}
+```
 
-## API Endpoints (Swagger UI)
+#### `POST /api/v1/auth/signin`
 
-The backend API documentation is available via Swagger UI.
+Authenticates a user and returns a JWT token.
 
-Once the backend server is running (either locally or via Docker Compose), you can access the Swagger UI at:
+**Request Body:**
+```json
+{
+  "username": "testuser",
+  "password": "password123"
+}
+```
 
-*   **Local:** `http://localhost:8080/swagger-ui.html`
-*   **Docker Compose:** If running via Docker Compose, the Nginx proxy might expose it differently, but typically you can access it through the Nginx port (e.g., `http://localhost/api/swagger-ui.html` or similar, depending on your Nginx configuration in `client/nginx.conf`). Please refer to the `client/nginx.conf` for the exact path.
+**Success Response (200 OK):**
+```json
+{
+  "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIi...",
+  "type": "Bearer",
+  "id": 1,
+  "username": "testuser",
+  "email": "test@example.com"
+}
+```
 
-The Swagger UI provides a comprehensive list of all available API endpoints, their request/response models, and allows you to test them directly.
+--- 
 
-## Database Schema
+### Expenses
+*(Authentication Required)*
 
-The database schema is managed by Flyway migrations. You can find the migration scripts in the `server/src/main/resources/db/migration` directory. These scripts define the tables and their relationships.
+#### `GET /api/v1/expenses`
 
-## Testing
+Retrieves all expenses for the authenticated user.
 
-### Backend Tests
+**Success Response (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "description": "Coffee Meeting",
+    "amount": 15.75,
+    "date": "2025-09-05",
+    "category": "Food"
+  },
+  {
+    "id": 2,
+    "description": "Office Supplies",
+    "amount": 54.00,
+    "date": "2025-09-04",
+    "category": "Work"
+  }
+]
+```
 
-1.  Navigate to the `server` directory.
-2.  Run all backend tests:
-    ```bash
-    mvn test
-    ```
+#### `POST /api/v1/expenses`
 
-### Frontend Tests
+Creates a new expense for the authenticated user.
 
-1.  Navigate to the `client` directory.
-2.  Run all frontend tests:
-    ```bash
-    npm test
-    ```
+**Request Body:**
+```json
+{
+  "description": "Dinner with team",
+  "amount": 85.50,
+  "date": "2025-09-03",
+  "category": "Social"
+}
+```
+
+**Success Response (200 OK):**
+```json
+{
+  "id": 3,
+  "description": "Dinner with team",
+  "amount": 85.50,
+  "date": "2025-09-03",
+  "category": "Social"
+}
+```
+
+#### `PUT /api/v1/expenses/{id}`
+
+Updates an existing expense by its ID.
+
+**Request Body:**
+```json
+{
+  "description": "Updated Dinner with team",
+  "amount": 90.00,
+  "date": "2025-09-03",
+  "category": "Food"
+}
+```
+
+**Success Response (200 OK):**
+```json
+{
+  "id": 3,
+  "description": "Updated Dinner with team",
+  "amount": 90.00,
+  "date": "2025-09-03",
+  "category": "Food"
+}
+```
+
+#### `DELETE /api/v1/expenses/{id}`
+
+Deletes an expense by its ID.
+
+**Success Response (200 OK):**
+(No content is returned, just a 200 status code)
