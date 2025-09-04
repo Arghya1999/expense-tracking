@@ -4,6 +4,10 @@
 
 The Expense Tracker is a robust, full-stack application engineered to provide users with a seamless and secure platform for managing personal finances. Leveraging modern web technologies, this application empowers users to effortlessly track, categorize, and analyze their expenditures.
 
+<img width="1890" height="856" alt="image" src="https://github.com/user-attachments/assets/85526e06-bfa9-45fa-8cd0-28c9f39888b6" />
+
+<img width="1845" height="835" alt="image" src="https://github.com/user-attachments/assets/e6a463b5-baf1-42ad-a0c4-83191aea1ee8" />
+
 ## ✨ Core Features
 
 *   **Secure User Authentication:** Robust user registration and login functionalities using JWT.
